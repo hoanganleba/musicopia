@@ -1,12 +1,31 @@
-import { convertFileSrc } from '@tauri-apps/api/tauri'
 import Titlebar from './components/TitleBar'
+import AlbumCard from './components/AlbumCard'
+import { createSignal, onMount, Show } from 'solid-js'
+import { invoke } from '@tauri-apps/api'
+import Metadata from './types/Metadata'
+import formatSampleRate from './utils/formatSampleRate'
 
 const App = () => {
+    const [metadata, setMetadata] = createSignal<Metadata>({
+        title: '',
+        artist: '',
+        album: '',
+        image: '',
+        bit_depth: 0,
+        sample_rate: 0,
+    })
+    onMount(async () => {
+        const metadata = await invoke<Metadata>('read_flac_metadata', {
+            filePath:
+                '/Users/hoanganleba/Downloads/WHITEFISTS - Prism Castle/WHITEFISTS - Prism Castle - 01 透明の城.flac',
+        })
+        setMetadata(metadata)
+    })
     return (
-        <div class="w-screen min-h-screen h-screen overflow-hidden">
+        <div class="w-screen min-h-screen h-screen overflow-hidden cursor-default select-none">
             <Titlebar />
             <div class="w-64 pt-16 px-6 h-full bg-neutral-50 flex flex-col gap-y-4 fixed">
-                <div class="flex gap-x-4 items-center text-purple-800 font-semibold p-2 cursor-default">
+                <div class="flex gap-x-4 items-center text-purple-800 font-semibold p-2">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -23,7 +42,7 @@ const App = () => {
                     </svg>
                     Albums
                 </div>
-                <div class="flex gap-x-4 items-center p-2 cursor-default">
+                <div class="flex gap-x-4 items-center p-2">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -40,7 +59,7 @@ const App = () => {
                     </svg>
                     Artists
                 </div>
-                <div class="flex gap-x-4 items-center p-2 cursor-default">
+                <div class="flex gap-x-4 items-center p-2">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -60,128 +79,45 @@ const App = () => {
             </div>
             <div class="pt-16 px-8 overflow-auto ml-64 h-full">
                 <h1 class="text-4xl text-purple-800 font-semibold">Albums</h1>
-                <div class="grid grid-cols-4 gap-8 mt-8">
-                    <div>
-                        <img
-                            class="rounded-xl"
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class="rounded-xl"
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
-                    <div>
-                        <img
-                            class=""
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
-                        />
-                    </div>
+                <div class="grid grid-cols-5 gap-8 mt-8">
+                    <AlbumCard
+                        image={`data:image/jpeg;base64,${metadata().image}`}
+                        album={metadata().album}
+                        artist={metadata().artist}
+                        title={metadata().title}
+                    />
                 </div>
             </div>
-
-            <div class="absolute bottom-0 inset-x-0 bg-white/30 backdrop-blur-xl h-36 shadow-2xl">
+            <div class="absolute bottom-0 inset-x-0 bg-white/30 backdrop-blur-xl h-40 shadow-2xl">
                 <div class="relative w-full h-full flex items-center px-8">
                     <div class="flex gap-4">
                         <img
-                            class="h-24 w-auto rounded-lg"
-                            src={convertFileSrc(
-                                '/Users/hoanganleba/Downloads/sEa-PuLsE - Lapislazuli/cover.png'
-                            )}
+                            class="h-28 w-auto rounded-lg"
+                            draggable="false"
+                            src={`data:image/jpeg;base64,${metadata().image}`}
                         />
                         <div>
-                            <h3 class="text-lg text-purple-900 font-semibold">
-                                Street - Lapislazuli - 04 God
+                            <h3 class="text-lg text-purple-900 font-semibold mt-0.5">
+                                {metadata().title}
                             </h3>
-                            <p class="text-purple-800">Umiai</p>
+                            <p class="text-purple-800 text-sm">
+                                {metadata().album}
+                            </p>
+                            <p class="text-purple-800 text-sm mt-1">
+                                {metadata().artist}
+                            </p>
+                            <div class="flex items-center mt-2 gap-2">
+                                <Show when={metadata().bit_depth >= 24}>
+                                <img
+                                    class="h-6"
+                                    src="src/assets/hires-audio-logo.png"
+                                />
+                                </Show>
+                                <p class="text-purple-800 text-xs font-medium">
+                                    FLAC {metadata().bit_depth}/
+                                    {formatSampleRate(metadata().sample_rate)}
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">

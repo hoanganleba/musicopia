@@ -14,6 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@fontsource/poppins": "^5.0.14",
     "@tauri-apps/api": "^1",
     "solid-js": "^1.7.8"
   },
